@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique de connexion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+         <a href="{{ url_for('dashboard.user_dashboard') }}" class="back-button" title="Retour au profil">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </a>
+        <div class="dashboard-header">
+            <div class="header-gradient"></div>
+            <div class="profile-image-container">
+                {% if user.profile_photo %}
+                    <img src="{{ url_for('static', filename='uploads/' + user.profile_photo) }}" alt="Photo de profil" class="profile-image">
+                {% else %}
+                    <div class="profile-image-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="user-info-card">
+                <div class="user-info-header">
+                    <h1>Historique de connexion</h1>
+                    <span class="user-status">{{ user.username }}</span>
+                    
+                </div>
+                
+                <div class="login-history-full">
+                    <table class="login-history-table">
+                        <thead>
+                            <tr>
+                                <th>Date et heure</th>
+                                <th>Adresse IP</th>
+                                <th>Appareil</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if login_history %}
+                                {% for login in login_history %}
+                                    <tr>
+                                        <td>{{ login.login_date.strftime('%d/%m/%Y à %H:%M') }}</td>
+                                        <td>{{ login.ip_address }}</td>
+                                        <td>{{ login.user_agent[:50] + '...' if login.user_agent and login.user_agent|length > 50 else login.user_agent }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" class="no-history">Aucun historique de connexion disponible</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
